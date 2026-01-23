@@ -2,7 +2,6 @@ import "dotenv/config";
 import { REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import type { Command } from "@/types/command";
 
 const token = process.env.DISCORD_TOKEN;
@@ -26,7 +25,7 @@ void (async () => {
 
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
-      const module = await import(pathToFileURL(filePath).toString());
+      const module = await import(filePath);
       const command: Command = module.default ?? module;
 
       if (command?.data?.name) {

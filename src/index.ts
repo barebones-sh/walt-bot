@@ -2,7 +2,6 @@ import "dotenv/config";
 import { Client, Collection, GatewayIntentBits } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import type { Command } from "@/types/command";
 import type { Event } from "@/types/event";
 
@@ -26,7 +25,7 @@ async function loadCommands() {
 
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const module = await import(pathToFileURL(filePath).toString());
+    const module = await import(filePath);
     const command = module.default ?? module;
 
     if (command?.data?.name && typeof command.execute === "function") {
@@ -45,7 +44,7 @@ async function loadEvents() {
 
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
-    const module = await import(pathToFileURL(filePath).toString());
+    const module = await import(filePath);
     const event: Event = module.default ?? module;
 
     if (!event?.name || !event?.execute) {

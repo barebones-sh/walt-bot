@@ -7,5 +7,9 @@
       "warn": 16705372,
       "error": 15548997
     }
+  },
+  "pingStatusThresholds": {
+    "operational": 150,
+    "degraded": 300
   }
 }

@@ -8,6 +8,10 @@ export interface EmbedConfig {
 
 export interface AppConfig {
   embed: EmbedConfig;
+  pingStatusThresholds: {
+    operational: number;
+    degraded: number;
+  };
 }
 
 let cachedConfig: AppConfig | null = null;
@@ -39,10 +43,21 @@ function validateConfig(config: unknown): AppConfig {
     assertNumber(value, `embed.presets.${key}`);
   }
 
+  const pingStatusThresholds = (config as Record<string, unknown>).pingStatusThresholds;
+  assertObject(pingStatusThresholds, "pingStatusThresholds");
+  const operational = (pingStatusThresholds as Record<string, unknown>).operational;
+  const degraded = (pingStatusThresholds as Record<string, unknown>).degraded;
+  assertNumber(operational, "pingStatusThresholds.operational");
+  assertNumber(degraded, "pingStatusThresholds.degraded");
+
   return {
     embed: {
       defaultColor,
       presets: presets as Record<string, number>
+    },
+    pingStatusThresholds: {
+      operational,
+      degraded
     }
   };
 }
