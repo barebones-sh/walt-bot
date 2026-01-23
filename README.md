@@ -15,7 +15,7 @@ npm install
 3. Register commands (guild-scoped):
 
 ```sh
-   npm run deploy:commands
+npm run deploy:commands
 ```
 
 4. Run the bot:
