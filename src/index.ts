@@ -27,10 +27,10 @@ async function loadCommands() {
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const module = await import(pathToFileURL(filePath).toString());
-    const command: Command = module.default ?? module;
+    const command = module.default ?? module;
 
-    if (command?.data?.name && command?.execute) {
-      client.commands.set(command.data.name, command);
+    if (command?.data?.name && typeof command.execute === "function") {
+      client.commands.set(command.data.name, command as Command);
     } else {
       console.warn(`Command file ${file} is missing required exports.`);
     }
