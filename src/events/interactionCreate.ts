@@ -1,4 +1,4 @@
-import { Collection, Events } from "discord.js";
+import { Collection, Events, MessageFlags } from "discord.js";
 import type { Event } from "@/types/event";
 import { createEmbed } from "@/utils/embed";
 
@@ -47,7 +47,7 @@ const event: Event<Events.InteractionCreate> = {
         });
         await interaction.reply({
           embeds: [embed],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
         return;
       }
@@ -72,12 +72,12 @@ const event: Event<Events.InteractionCreate> = {
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
           embeds: [embed],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       } else {
         await interaction.reply({
           embeds: [embed],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
       }
     }
