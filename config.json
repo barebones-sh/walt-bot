@@ -1,0 +1,11 @@
+{
+  "embed": {
+    "defaultColor": 16777215,
+    "presets": {
+      "normal": 16777215,
+      "success": 5763719,
+      "warn": 16705372,
+      "error": 15548997
+    }
+  }
+}

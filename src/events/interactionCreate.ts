@@ -1,5 +1,6 @@
 import { Collection, Events } from "discord.js";
 import type { Event } from "@/types/event";
+import { createEmbed } from "@/utils/embed";
 
 const event: Event<Events.InteractionCreate> = {
   name: Events.InteractionCreate,
@@ -39,8 +40,13 @@ const event: Event<Events.InteractionCreate> = {
 
       if (now < expirationTime) {
         const timeLeft = (expirationTime - now) / 1000;
+        const embed = createEmbed({
+          title: "Slow down",
+          description: `Please wait ${timeLeft.toFixed(1)} more second(s) before reusing \`${command.data.name}\`.`,
+          user: interaction.client.user
+        });
         await interaction.reply({
-          content: `Please wait ${timeLeft.toFixed(1)} more second(s) before reusing \`${command.data.name}\`.`,
+          embeds: [embed],
           ephemeral: true
         });
         return;
@@ -57,14 +63,20 @@ const event: Event<Events.InteractionCreate> = {
     } catch (error) {
       console.error(`Error executing ${interaction.commandName}:`, error);
 
+      const embed = createEmbed({
+        title: "Error",
+        description: "There was an error while executing this command.",
+        user: interaction.client.user
+      });
+
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
-          content: "There was an error while executing this command.",
+          embeds: [embed],
           ephemeral: true
         });
       } else {
         await interaction.reply({
-          content: "There was an error while executing this command.",
+          embeds: [embed],
           ephemeral: true
         });
       }
