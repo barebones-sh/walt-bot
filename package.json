@@ -12,13 +12,13 @@
     "update": "tsx src/update.ts"
   },
   "dependencies": {
-    "discord.js": "^14.25.1",
-    "dotenv": "^16.4.5"
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.4.2"
   },
   "devDependencies": {
-    "@types/node": "^20.11.30",
-    "tsc-alias": "^1.8.8",
-    "tsx": "^4.7.2",
-    "typescript": "^5.4.2"
+    "@types/node": "^26.0.0",
+    "tsc-alias": "^1.8.17",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
   }
 }
