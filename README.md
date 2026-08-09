@@ -1,4 +1,4 @@
-# walt-bot
+# walt.js
 
 A good TypeScript Discord bot.
 

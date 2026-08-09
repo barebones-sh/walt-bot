@@ -25,12 +25,12 @@ function run(command: string, args: string[]) {
 }
 
 async function main() {
-  const repo = "barebones-sh/walt-bot";
+  const repo = "barebones-sh/walt.js";
   const url = `https://api.github.com/repos/${repo}/releases/latest`;
 
   const response = await fetch(url, {
     headers: {
-      "User-Agent": "walt-bot-updater"
+      "User-Agent": "walt.js-updater"
     }
   });
 
