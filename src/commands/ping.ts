@@ -1,7 +1,13 @@
 import { SlashCommandBuilder } from "discord.js";
 import type { Command } from "@/types/command";
-import { createEmbed } from "@/utils/embed";
+import { createEmbed, type EmbedPreset } from "@/utils/embed";
 import { getConfig } from "@/utils/config";
+
+const pingStatusLabels: Record<Extract<EmbedPreset, "success" | "warn" | "error">, string> = {
+  success: "Operational",
+  warn: "Degraded",
+  error: "Poor"
+};
 
 const command: Command = {
   data: new SlashCommandBuilder()
@@ -44,6 +50,8 @@ const command: Command = {
 
     await sleep(2000);
 
+    const { operational, degraded } = getConfig().pingStatusThresholds;
+
     const wsSamples: number[] = [];
     for (let i = 0; i < samples; i += 1) {
       const ping = interaction.client.ws.ping;
@@ -59,19 +67,13 @@ const command: Command = {
         : null;
 
       const worst = Math.max(roundTrip, wsMax ?? 0);
-      const { operational, degraded } = getConfig().pingStatusThresholds;
-      const preset =
+      const preset: Extract<EmbedPreset, "success" | "warn" | "error"> =
         worst < operational
           ? "success"
           : worst < degraded
             ? "warn"
             : "error";
-      const statusLabel =
-        preset === "success"
-          ? "Operational"
-          : preset === "warn"
-            ? "Degraded"
-            : "Poor";
+      const statusLabel = pingStatusLabels[preset];
 
       const progressEmbed = createEmbed({
         preset,

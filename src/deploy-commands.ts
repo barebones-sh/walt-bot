@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { REST, Routes } from "discord.js";
-import fs from "node:fs";
 import path from "node:path";
 import type { Command } from "@/types/command";
+import { loadModules } from "@/utils/load-files";
 
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
@@ -17,17 +17,11 @@ const rest = new REST({ version: "10" }).setToken(token);
 void (async () => {
   try {
     const commandsPath = path.join(__dirname, "commands");
-    const commandFiles = fs
-      .readdirSync(commandsPath)
-      .filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
+    const commandFiles = await loadModules<Command>(commandsPath);
 
     const commands = [] as object[];
 
-    for (const file of commandFiles) {
-      const filePath = path.join(commandsPath, file);
-      const module = await import(filePath);
-      const command: Command = module.default ?? module;
-
+    for (const { file, mod: command } of commandFiles) {
       if (command?.data?.name) {
         commands.push(command.data.toJSON());
       } else {

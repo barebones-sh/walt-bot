@@ -2,7 +2,8 @@ import {
   ActivityType,
   MessageFlags,
   PermissionFlagsBits,
-  SlashCommandBuilder
+  SlashCommandBuilder,
+  type PresenceStatusData
 } from "discord.js";
 import type { Command } from "@/types/command";
 import { createEmbed } from "@/utils/embed";
@@ -73,7 +74,7 @@ const command: Command = {
       : [];
 
     await interaction.client.user?.setPresence({
-      status: presence as "online" | "idle" | "dnd" | "invisible",
+      status: presence as PresenceStatusData,
       activities
     });
 

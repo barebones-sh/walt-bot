@@ -1,9 +1,9 @@
 import "dotenv/config";
 import { Client, Collection, GatewayIntentBits } from "discord.js";
-import fs from "node:fs";
 import path from "node:path";
 import type { Command } from "@/types/command";
 import type { Event } from "@/types/event";
+import { loadModules } from "@/utils/load-files";
 
 const token = process.env.DISCORD_TOKEN;
 if (!token) {
@@ -19,17 +19,11 @@ client.cooldowns = new Collection<string, Collection<string, number>>();
 
 async function loadCommands() {
   const commandsPath = path.join(__dirname, "commands");
-  const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
+  const commands = await loadModules<Command>(commandsPath);
 
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const module = await import(filePath);
-    const command = module.default ?? module;
-
+  for (const { file, mod: command } of commands) {
     if (command?.data?.name && typeof command.execute === "function") {
-      client.commands.set(command.data.name, command as Command);
+      client.commands.set(command.data.name, command);
     } else {
       console.warn(`Command file ${file} is missing required exports.`);
     }
@@ -38,15 +32,9 @@ async function loadCommands() {
 
 async function loadEvents() {
   const eventsPath = path.join(__dirname, "events");
-  const eventFiles = fs
-    .readdirSync(eventsPath)
-    .filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
+  const events = await loadModules<Event>(eventsPath);
 
-  for (const file of eventFiles) {
-    const filePath = path.join(eventsPath, file);
-    const module = await import(filePath);
-    const event: Event = module.default ?? module;
-
+  for (const { file, mod: event } of events) {
     if (!event?.name || !event?.execute) {
       console.warn(`Event file ${file} is missing required exports.`);
       continue;

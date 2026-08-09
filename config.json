@@ -1,11 +1,11 @@
 {
   "embed": {
-    "defaultColor": 16777215,
+    "defaultColor": "#FFFFFF",
     "presets": {
-      "normal": 16777215,
-      "success": 5763719,
-      "warn": 16705372,
-      "error": 15548997
+      "normal": "#FFFFFF",
+      "success": "#57F287",
+      "warn": "#FEE75C",
+      "error": "#ED4245"
     }
   },
   "pingStatusThresholds": {

@@ -1,6 +1,13 @@
-import { EmbedBuilder, type APIEmbedField, type User } from "discord.js";
+import {
+  EmbedBuilder,
+  type APIEmbedField,
+  type ColorResolvable,
+  type User
+} from "discord.js";
 import pkg from "../../package.json";
 import { getConfig } from "@/utils/config";
+
+export type EmbedPreset = "normal" | "success" | "warn" | "error";
 
 export interface EmbedOptions {
   author?: {
@@ -8,7 +15,7 @@ export interface EmbedOptions {
     iconURL?: string;
     url?: string;
   };
-  color?: number;
+  color?: ColorResolvable;
   description?: string;
   fields?: APIEmbedField[];
   footer?: {
@@ -21,7 +28,7 @@ export interface EmbedOptions {
   title?: string;
   url?: string;
   user?: User | null;
-  preset?: keyof ReturnType<typeof getConfig>["embed"]["presets"];
+  preset?: EmbedPreset;
 }
 
 export function createEmbed(options: EmbedOptions = {}) {
@@ -31,9 +38,13 @@ export function createEmbed(options: EmbedOptions = {}) {
   const presetColor = options.preset
     ? appConfig.embed.presets[options.preset]
     : undefined;
-  embed.setColor(options.color ?? presetColor ?? appConfig.embed.defaultColor);
+  // config.json's colors are hex strings but resolveJsonModule widens them to
+  // `string`, so they need a nudge back to the literal type setColor() expects.
+  embed.setColor(
+    options.color ?? (presetColor as ColorResolvable) ?? (appConfig.embed.defaultColor as ColorResolvable)
+  );
 
-  const defaultTitles: Partial<Record<string, string>> = {
+  const defaultTitles: Partial<Record<EmbedPreset, string>> = {
     success: "Success",
     warn: "Warning",
     error: "Error"

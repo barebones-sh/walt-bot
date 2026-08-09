@@ -37,7 +37,7 @@ Commands are registered guild-scoped (not global) via `deploy:commands`.
 
 **`client.commands` and `client.cooldowns`** are added to the Discord.js `Client` type via module augmentation in `src/types/discord.d.ts`.
 
-**Config** (`config.json` + `src/utils/config.ts`): Runtime config loaded from `config.json` at the project root, cached after first read. Contains embed color presets and ping latency thresholds.
+**Config** (`config.json` + `src/utils/config.ts`): `config.json` at the project root is imported directly (via `resolveJsonModule`) and re-exported through `getConfig()`. Contains embed color presets (hex strings) and ping latency thresholds.
 
 **Embeds** (`src/utils/embed.ts`): All Discord embeds are created through `createEmbed()`. Supports color presets (`normal`, `success`, `warn`, `error`), auto-footer with bot version and user avatar, and auto-timestamp.
 

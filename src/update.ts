@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { spawnSync } from "node:child_process";
+import semver from "semver";
 import pkg from "../package.json";
 
 interface GithubRelease {
@@ -7,21 +8,13 @@ interface GithubRelease {
   html_url: string;
 }
 
-function parseVersion(version: string) {
-  const cleaned = version.trim().replace(/^v/i, "");
-  const core = cleaned.split("-")[0];
-  const parts = core.split(".").map((part) => Number(part));
-  if (parts.length < 1 || parts.some((n) => Number.isNaN(n))) return null;
-  return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0] as const;
-}
-
 function isNewer(latest: string, current: string) {
-  const a = parseVersion(latest);
-  const b = parseVersion(current);
+  // coerce() tolerates a leading "v" and stray whitespace; includePrerelease
+  // keeps -rc./-beta. tags significant instead of silently discarding them.
+  const a = semver.coerce(latest, { includePrerelease: true });
+  const b = semver.coerce(current, { includePrerelease: true });
   if (!a || !b) return false;
-  if (a[0] !== b[0]) return a[0] > b[0];
-  if (a[1] !== b[1]) return a[1] > b[1];
-  return a[2] > b[2];
+  return semver.gt(a, b);
 }
 
 function run(command: string, args: string[]) {
@@ -66,8 +59,10 @@ async function main() {
   }
 
   run("git", ["fetch", "--tags", "--force"]);
+  // Pins the working tree to the release tag (detached HEAD is expected here —
+  // this is a pin-to-latest-release update, not tracking a branch). The tag
+  // checkout already lands on the exact target commit, so no pull follows it.
   run("git", ["checkout", "--force", latestTag]);
-  run("git", ["pull", "--ff-only"]);
   run("npm", ["install"]);
   run("npm", ["run", "build"]);
 
